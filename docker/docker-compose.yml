@@ -1,0 +1,50 @@
+version: '2.1'
+services:
+  database:
+    restart: on-failure
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "cybertek"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    networks:
+      backend:
+        aliases:
+          - "database"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  configserver:
+    image: ticketingapp/config-server:0.0.1-SNAPSHOT
+    ports:
+      - "8888:8888"
+#    environment:
+#      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
+    networks:
+      backend:
+        aliases:
+          - "configserver"
+  userservice:
+    image: ticketingapp/user-service:0.0.1-SNAPSHOT
+    environment:
+      PROFILE: "dev"
+      CONFIGSERVER_URI: "http://configserver:8888"
+      CONFIGSERVER_PORT:   "8888"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
