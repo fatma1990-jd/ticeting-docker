@@ -9,6 +9,8 @@ import com.microservices.demo.service.UserService;
 import com.microservices.demo.util.MapperUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,7 @@ import java.util.List;
 @Tag(name = "User Controller",description = "User API")
 public class UserController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     private UserService userService;
     private MapperUtil mapperUtil;
@@ -45,6 +48,7 @@ public class UserController {
     @Operation(summary = "Read All Users")
     public ResponseEntity<ResponseWrapper> readAll(){
         List<UserDTO> result = userService.listAllUsers();
+        LOG.info("Users are retrieved");
         return ResponseEntity.ok(new ResponseWrapper("Successfully retrieved users",result));
     }
 
