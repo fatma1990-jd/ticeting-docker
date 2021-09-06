@@ -21,17 +21,15 @@ services:
       timeout: 5s
       retries: 5
   configserver:
-    image: ticketingapp/config-server:0.0.1-SNAPSHOT
+    image: ${GROUP_ID}/config-server:${SERVICE_VERSION:-latest}
     ports:
       - "8888:8888"
-#    environment:
-#      ENCRYPT_KEY: "fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo"
     networks:
       backend:
         aliases:
           - "configserver"
   userservice:
-    image: ticketingapp/user-service:0.0.1-SNAPSHOT
+    image: ${GROUP_ID}/user-service:${SERVICE_VERSION:-latest}
     environment:
       PROFILE: "dev"
       CONFIGSERVER_URI: "http://configserver:8888"

@@ -11,10 +11,6 @@
 
     <artifactId>config-server</artifactId>
 
-    <properties>
-        <docker.image.prefix>ticketingapp</docker.image.prefix>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -30,38 +26,6 @@
         </dependency>
     </dependencies>
 
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--            &lt;!&ndash; This plugin is used to create a docker image and publish the image to docker hub&ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>com.spotify</groupId>-->
-<!--                <artifactId>dockerfile-maven-plugin</artifactId>-->
-<!--                <version>1.4.13</version>-->
-<!--                <configuration>-->
-<!--                    <repository>${docker.image.prefix}/${project.artifactId}</repository>-->
-<!--                    <tag>${project.version}</tag>-->
-<!--                    <buildArgs>-->
-<!--                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>-->
-<!--                    </buildArgs>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>default</id>-->
-<!--                        <phase>install</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>build</goal>-->
-<!--                            <goal>push</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
-
     <build>
         <plugins>
             <plugin>
@@ -69,7 +33,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <name>${docker.image.prefix}/config-server:${project.version}</name>
+                        <name>${project.groupId}/config-server:${project.version}</name>
                     </image>
                 </configuration>
                 <executions>

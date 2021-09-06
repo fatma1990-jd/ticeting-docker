@@ -11,10 +11,6 @@
 
     <artifactId>user-service</artifactId>
 
-    <properties>
-        <docker.image.prefix>ticketingapp</docker.image.prefix>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.microservices.demo</groupId>
@@ -81,7 +77,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <name>${docker.image.prefix}/user-service:${project.version}</name>
+                        <name>${project.groupId}/user-service:${project.version}</name>
                     </image>
                 </configuration>
                 <executions>
