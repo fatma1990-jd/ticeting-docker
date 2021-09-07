@@ -1,6 +1,7 @@
 package com.microservices.demo.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -23,6 +24,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring()
                 .antMatchers(permittedUrls);
 
+
         super.configure(web);
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Note:
+        // Use this to enable the tomcat basic authentication (tomcat popup rather than spring login page)
+        // Note that the CSRf token is disabled for all requests (change it as you wish...)
+        http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic();
     }
 }
