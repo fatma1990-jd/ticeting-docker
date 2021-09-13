@@ -43,6 +43,7 @@ services:
       - "8080:8080"
     networks:
       - backend
+
   discovery-service-1:
     image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
     ports:

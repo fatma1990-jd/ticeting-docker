@@ -1,6 +1,7 @@
 package com.microservices.demo.dto;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microservices.demo.enums.Gender;
 import lombok.*;
 
