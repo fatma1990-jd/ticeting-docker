@@ -31,9 +31,10 @@ services:
   userservice:
     image: ${GROUP_ID}/user-service:${SERVICE_VERSION:-latest}
     environment:
-      PROFILE: "dev"
-      CONFIGSERVER_URI: "http://configserver:8888"
-      CONFIGSERVER_PORT:   "8888"
+      - "PROFILE=dev"
+      - "CONFIGSERVER_URI=http://configserver:8888"
+      - "CONFIGSERVER_PORT=8888"
+      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
     depends_on:
       database:
         condition: service_healthy
@@ -43,7 +44,38 @@ services:
       - "8080:8080"
     networks:
       - backend
-
+  projectservice:
+    image: ${GROUP_ID}/project-service:${SERVICE_VERSION:-latest}
+    environment:
+      - "PROFILE=dev"
+      - "CONFIGSERVER_URI=http://configserver:8888"
+      - "CONFIGSERVER_PORT=8888"
+      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+  taskservice:
+    image: ${GROUP_ID}/task-service:${SERVICE_VERSION:-latest}
+    environment:
+      - "PROFILE=dev"
+      - "CONFIGSERVER_URI=http://configserver:8888"
+      - "CONFIGSERVER_PORT=8888"
+      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+    ports:
+      - "8082:8082"
+    networks:
+      - backend
   discovery-service-1:
     image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
     ports:
