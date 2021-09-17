@@ -10,6 +10,7 @@
         <module>app-domain-model</module>
         <module>project-service</module>
         <module>task-service</module>
+        <module>app-client-management</module>
     </modules>
 
     <parent>
@@ -49,6 +50,11 @@
             <dependency>
                 <groupId>com.microservices.demo</groupId>
                 <artifactId>app-config-data</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.microservices.demo</groupId>
+                <artifactId>app-client-management</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
