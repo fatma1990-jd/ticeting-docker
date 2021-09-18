@@ -56,9 +56,9 @@ public class UserController {
     @DefaultExceptionMessage(defaultMessage = "Something went wrong, try again!")
     @Operation(summary = "Read by username")
     //Only admin should see other profiles or current user can see his/her profile
-    public ResponseEntity<ResponseWrapper> readByUsername(@PathVariable("username") String username) throws AccessDeniedException {
+    public UserDTO readByUsername(@PathVariable("username") String username) throws AccessDeniedException {
         UserDTO user = userService.findByUserName(username);
-        return ResponseEntity.ok(new ResponseWrapper("Successfully retrieved user",user));
+        return user;
     }
 
     @PutMapping
@@ -85,4 +85,14 @@ public class UserController {
         List<UserDTO> userList = userService.listAllByRole(role);
         return ResponseEntity.ok(new ResponseWrapper("Successfully read users by role",userList));
     }
+
+    @GetMapping("/all")
+    @DefaultExceptionMessage(defaultMessage = "Something went wrong, try again!")
+    @Operation(summary = "Read All Users")
+    public List<UserDTO> readAllUsers(){
+        List<UserDTO> result = userService.listAllUsers();
+        LOG.info("Users are retrieved");
+        return result;
+    }
+
 }

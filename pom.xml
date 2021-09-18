@@ -31,7 +31,7 @@
     <properties>
         <java.version>11</java.version>
         <spring-boot.version>2.3.3.RELEASE</spring-boot.version>
-        <lombok.version>1.18.16</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
         <springdoc-openapi-ui.version>1.5.0</springdoc-openapi-ui.version>
         <modelmapper.version>2.3.9</modelmapper.version>
         <spring-cloud.version>2.2.6.RELEASE</spring-cloud.version>
@@ -82,11 +82,11 @@
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-security</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-starter-security</artifactId>-->
+<!--                <version>${spring-boot.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.modelmapper</groupId>
                 <artifactId>modelmapper</artifactId>
@@ -114,7 +114,11 @@
                 <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
                 <version>${spring-cloud.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${spring-cloud.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>

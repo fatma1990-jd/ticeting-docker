@@ -11,10 +11,6 @@ spring:
       retry:
         maxAttempts: 200
         maxInterval: 10000
-      username: spring_cloud_user
-      password: '{cipher}58c7504dad051313c6121d274db95b8f77207029e3425ad82704c5d76a1417c645744980baae089f185f3be42ef2e9b3'
-encrypt:
-  key: 'Demo_Pwd!2020'
 eureka:
   client:
     serviceUrl:

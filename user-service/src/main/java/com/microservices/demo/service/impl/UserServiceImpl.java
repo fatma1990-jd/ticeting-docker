@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findByUserName(String username) throws AccessDeniedException {
+    public UserDTO findByUserName(String username) {
         User user = userRepository.findByUserName(username);
         return mapperUtil.convert(user,new UserDTO());
     }

@@ -2,6 +2,7 @@ package com.microservices.demo.controller;
 
 import com.microservices.demo.annotation.DefaultExceptionMessage;
 import com.microservices.demo.dto.ProjectDTO;
+import com.microservices.demo.dto.UserDTO;
 import com.microservices.demo.entity.ResponseWrapper;
 import com.microservices.demo.exception.TicketingProjectException;
 import com.microservices.demo.service.ProjectService;

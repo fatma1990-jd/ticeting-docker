@@ -9,11 +9,10 @@ spring:
           clone-on-start: true
           default-label: main
           username: ozzy-dev
-          password: '{cipher}e13e43ccee5a413621a6c60743ff7abe7c89365ffc8bdbd810cfff826588149414f4b49611245801e099348d70917939149bdec6f85d1a0cc430d76eea0efaf8'
+          password: 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
     fail-fast: true
-  security:
-    user:
-      name: spring_cloud_user
-      password: '{cipher}58c7504dad051313c6121d274db95b8f77207029e3425ad82704c5d76a1417c645744980baae089f185f3be42ef2e9b3'
-encrypt:
-  key: 'Demo_Pwd!2020'
+#  security:
+#    user:
+#      name: spring_cloud_user
+#      password: springCloud_Pwd!
+

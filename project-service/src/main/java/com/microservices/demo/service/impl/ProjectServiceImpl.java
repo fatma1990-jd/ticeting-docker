@@ -1,6 +1,5 @@
 package com.microservices.demo.service.impl;
 
-import com.microservices.demo.config.UserClientServiceProperties;
 import com.microservices.demo.dto.ProjectDTO;
 import com.microservices.demo.dto.UserDTO;
 import com.microservices.demo.entity.Project;
@@ -9,13 +8,10 @@ import com.microservices.demo.enums.Status;
 import com.microservices.demo.exception.TicketingProjectException;
 import com.microservices.demo.repository.ProjectRepository;
 import com.microservices.demo.service.ProjectService;
-import com.microservices.demo.userclient.config.UserClientConfiguration;
 import com.microservices.demo.userclient.service.UserClientService;
-import com.microservices.demo.userclient.service.impl.UserClientServiceImpl;
 import com.microservices.demo.util.MapperUtil;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,14 +22,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRepository projectRepository;
     private MapperUtil mapperUtil;
-    private UserClientServiceProperties userClientServiceProperties;
-    private RestTemplate restTemplate;
+    private UserClientService userClientService;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, MapperUtil mapperUtil, UserClientServiceProperties userClientServiceProperties, RestTemplate restTemplate) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, MapperUtil mapperUtil, UserClientService userClientService) {
         this.projectRepository = projectRepository;
         this.mapperUtil = mapperUtil;
-        this.userClientServiceProperties = userClientServiceProperties;
-        this.restTemplate = restTemplate;
+        this.userClientService = userClientService;
     }
 
     @Override
@@ -117,9 +111,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDTO> listAllProjectDetails(String userName) throws TicketingProjectException {
 
-        UserClientService userClientService = new UserClientServiceImpl(restTemplate, prepareUserClientConf(userName));
+        UserDTO user = userClientService.getUserDTOByUserName(userName);
 
-        UserDTO user = userClientService.getUserDTOByUserName();
         if(user != null){
             List<Project> list = projectRepository.findAllByAssignedManagerId(user.getId());
 
@@ -139,11 +132,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
         throw new TicketingProjectException("user couldn't find");
     }
-    private UserClientConfiguration prepareUserClientConf(String userName){
-        UserClientConfiguration userClientConfiguration = new UserClientConfiguration();
-        userClientConfiguration.setUrl(userClientServiceProperties.getUrl() + "/" + userName);
-        return userClientConfiguration;
-    }
 
     @Override
     public List<ProjectDTO> readAllByAssignedManager(User user) {
@@ -159,4 +147,5 @@ public class ProjectServiceImpl implements ProjectService {
                 .map(project -> mapperUtil.convert(project,new ProjectDTO()))
                 .collect(Collectors.toList());
     }
+
 }

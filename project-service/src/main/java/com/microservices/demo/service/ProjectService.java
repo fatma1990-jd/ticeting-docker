@@ -1,6 +1,7 @@
 package com.microservices.demo.service;
 
 import com.microservices.demo.dto.ProjectDTO;
+import com.microservices.demo.dto.UserDTO;
 import com.microservices.demo.entity.User;
 import com.microservices.demo.exception.TicketingProjectException;
 
@@ -25,4 +26,5 @@ public interface ProjectService {
     List<ProjectDTO> readAllByAssignedManager(User user);
 
     List<ProjectDTO> listAllNonCompletedProjects();
+
 }
