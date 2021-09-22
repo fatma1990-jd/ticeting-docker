@@ -126,6 +126,7 @@ public class ProjectServiceImpl implements ProjectService {
                 projectDTO.setProjectStatus(project.getProjectStatus());
                 projectDTO.setProjectName(project.getProjectName());
                 projectDTO.setProjectCode(project.getProjectCode());
+                projectDTO.setId(project.getId());
                 projectDTO.setAssignedManager(user);
                 return projectDTO;
             }).collect(Collectors.toList());
