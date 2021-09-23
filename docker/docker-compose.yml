@@ -1,121 +1,3 @@
-version: '2.1'
-services:
-  database:
-    restart: "no"
-    image: postgres:latest
-    ports:
-      - "5435:5432"
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "admin"
-      POSTGRES_DB: "cybertek_db"
-    volumes:
-      - ./init:/docker-entrypoint-initdb.d
-    networks:
-      backend:
-        aliases:
-          - "database"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  configserver:
-    image: ${GROUP_ID}/config-server:${SERVICE_VERSION:-latest}
-    ports:
-      - "8888:8888"
-    networks:
-      backend:
-        aliases:
-          - "configserver"
-  userservice:
-    image: ${GROUP_ID}/user-service:${SERVICE_VERSION:-latest}
-    environment:
-      - "PROFILE=dev"
-      - "CONFIGSERVER_URI=http://configserver:8888"
-      - "CONFIGSERVER_PORT=8888"
-      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
-    depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-    ports:
-      - "8080:8080"
-    networks:
-      - backend
-  projectservice:
-    image: ${GROUP_ID}/project-service:${SERVICE_VERSION:-latest}
-    environment:
-      - "PROFILE=dev"
-      - "CONFIGSERVER_URI=http://configserver:8888"
-      - "CONFIGSERVER_PORT=8888"
-      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
-    depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-    ports:
-      - "8081:8081"
-    networks:
-      - backend
-  taskservice:
-    image: ${GROUP_ID}/task-service:${SERVICE_VERSION:-latest}
-    environment:
-      - "PROFILE=dev"
-      - "CONFIGSERVER_URI=http://configserver:8888"
-      - "CONFIGSERVER_PORT=8888"
-      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
-    depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-    ports:
-      - "8082:8082"
-    networks:
-      - backend
-#  discovery-service-1:
-  discovery-service:
-    image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
-    ports:
-      - "5014:5014"
-      - "8761:8761"
-    volumes:
-      - "./docker-logs:/workspace/discovery-service/logs"
-    environment:
-      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5014 -Xms128m -Xmx256m"
-      - "LOGGING_LEVEL_ROOT=info"
-      - "SERVER_PORT=8761"
-#      - "SPRING_PROFILES_ACTIVE=peer1"
-#      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-1"
-#      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-1:8761/eureka/,http://discovery-service-2:8762/eureka/"
-      - "EUREKA_INSTANCE_HOSTNAME=localhost"
-      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://localhost:8761/eureka/"
-    networks:
-      - backend
-#  discovery-service-2:
-#    image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
-#    ports:
-#      - "5015:5015"
-#      - "8762:8762"
-#    volumes:
-#      - "./docker-logs:/workspace/discovery-service/logs"
-#    environment:
-#      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5015 -Xms128m -Xmx256m"
-#      - "LOGGING_LEVEL_ROOT=info"
-#      - "SERVER_PORT=8762"
-#      - "SPRING_PROFILES_ACTIVE=peer2"
-#      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-2"
-#      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-2:8762/eureka/,http://discovery-service-1:8761/eureka/"
-#    networks:
-#      - backend
-networks:
-  backend:
-    driver: bridge
-
-
 #version: '2.1'
 #services:
 #  database:
@@ -127,16 +9,136 @@ networks:
 #      POSTGRES_USER: "postgres"
 #      POSTGRES_PASSWORD: "admin"
 #      POSTGRES_DB: "cybertek_db"
-#    #    networks:
-#    #      backend:
-#    #        aliases:
-#    #          - "database"
 #    volumes:
 #      - ./init:/docker-entrypoint-initdb.d
+#    networks:
+#      backend:
+#        aliases:
+#          - "database"
 #    healthcheck:
 #      test: ["CMD-SHELL", "pg_isready -U postgres"]
 #      interval: 10s
 #      timeout: 5s
 #      retries: 5
 #  configserver:
-#
+#    image: ${GROUP_ID}/config-service:${SERVICE_VERSION:-latest}
+#    ports:
+#      - "8888:8888"
+#    networks:
+#      backend:
+#        aliases:
+#          - "configserver"
+#  userservice:
+#    image: ${GROUP_ID}/user-service:${SERVICE_VERSION:-latest}
+#    environment:
+#      - "PROFILE=dev"
+#      - "CONFIGSERVER_URI=http://configserver:8888"
+#      - "CONFIGSERVER_PORT=8888"
+#      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+#    depends_on:
+#      database:
+#        condition: service_healthy
+#      configserver:
+#        condition: service_started
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - backend
+#  projectservice:
+#    image: ${GROUP_ID}/project-service:${SERVICE_VERSION:-latest}
+#    environment:
+#      - "PROFILE=dev"
+#      - "CONFIGSERVER_URI=http://configserver:8888"
+#      - "CONFIGSERVER_PORT=8888"
+#      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+#    depends_on:
+#      database:
+#        condition: service_healthy
+#      configserver:
+#        condition: service_started
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - backend
+#  taskservice:
+#    image: ${GROUP_ID}/task-service:${SERVICE_VERSION:-latest}
+#    environment:
+#      - "PROFILE=dev"
+#      - "CONFIGSERVER_URI=http://configserver:8888"
+#      - "CONFIGSERVER_PORT=8888"
+#      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+#    depends_on:
+#      database:
+#        condition: service_healthy
+#      configserver:
+#        condition: service_started
+#    ports:
+#      - "8082:8082"
+#    networks:
+#      - backend
+##  discovery-service-1:
+#  discovery-service:
+#    image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
+#    ports:
+#      - "5014:5014"
+#      - "8761:8761"
+#    volumes:
+#      - "./docker-logs:/workspace/discovery-service/logs"
+#    environment:
+#      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5014 -Xms128m -Xmx256m"
+#      - "LOGGING_LEVEL_ROOT=info"
+#      - "SERVER_PORT=8761"
+##      - "SPRING_PROFILES_ACTIVE=peer1"
+##      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-1"
+##      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-1:8761/eureka/,http://discovery-service-2:8762/eureka/"
+#      - "EUREKA_INSTANCE_HOSTNAME=localhost"
+#      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://localhost:8761/eureka/"
+#    networks:
+#      - backend
+##  discovery-service-2:
+##    image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
+##    ports:
+##      - "5015:5015"
+##      - "8762:8762"
+##    volumes:
+##      - "./docker-logs:/workspace/discovery-service/logs"
+##    environment:
+##      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5015 -Xms128m -Xmx256m"
+##      - "LOGGING_LEVEL_ROOT=info"
+##      - "SERVER_PORT=8762"
+##      - "SPRING_PROFILES_ACTIVE=peer2"
+##      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-2"
+##      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-2:8762/eureka/,http://discovery-service-1:8761/eureka/"
+##    networks:
+##      - backend
+#networks:
+#  backend:
+#    driver: bridge
+
+
+version: '2.1'
+services:
+  database:
+    restart: "no"
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "cybertek_db"
+    #    networks:
+    #      backend:
+    #        aliases:
+    #          - "database"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+
+

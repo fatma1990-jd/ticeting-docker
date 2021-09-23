@@ -24,7 +24,7 @@ spring:
   cloud:
     config:
       name: user-service,config-client
-      uri: http://configserver:8888
+      uri: http://localhost:8888
       fail-fast: true
       retry:
         maxAttempts: 200

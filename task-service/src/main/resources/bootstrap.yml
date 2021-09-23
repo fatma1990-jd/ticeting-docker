@@ -5,13 +5,17 @@ spring:
     active: user_service
   cloud:
     config:
-      name: task-service,config-client
-      uri: http://configserver:8888
+      name: user-service,config-client
+      uri: http://localhost:8888
       fail-fast: true
       retry:
         maxAttempts: 200
         maxInterval: 10000
 eureka:
+  instance:
+    hostname: localhost
   client:
+    register-with-eureka: true
+    fetch-registry: true
     serviceUrl:
-      defaultZone: http://discovery-service-1:8761/eureka/,http://discovery-service-2:8762/eureka/
+      defaultZone: http://localhost:8761/eureka/

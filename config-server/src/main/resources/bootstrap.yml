@@ -7,7 +7,7 @@ spring:
         git:
           uri: https://github.com/ozzy-dev/ticketing-application-microservice-config-repo
           clone-on-start: true
-          default-label: no-docker-ct
+          default-label: main
           username: ozzy-dev
           password: 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
     fail-fast: true
