@@ -36,13 +36,22 @@ public class ProjectController {
         return ResponseEntity.ok(new ResponseWrapper("Project are retrieved",projectDTOS));
     }
 
-    @GetMapping("/{projectcode}")
+//    @GetMapping("/{projectCode}")
+//    @Operation(summary = "Read by project code")
+//    @DefaultExceptionMessage(defaultMessage = "Something went wrong, try again!")
+////    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+//    public ResponseEntity<ResponseWrapper> readByProjectCode(@PathVariable("projectCode") String projectCode){
+//        ProjectDTO projectDTO = projectService.getByProjectCode(projectCode);
+//        return ResponseEntity.ok(new ResponseWrapper("Project is retrieved",projectDTO));
+//    }
+
+    @GetMapping("/{projectCode}")
     @Operation(summary = "Read by project code")
     @DefaultExceptionMessage(defaultMessage = "Something went wrong, try again!")
 //    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
-    public ResponseEntity<ResponseWrapper> readByProjectCode(@PathVariable("projectcode") String projectcode){
-        ProjectDTO projectDTO = projectService.getByProjectCode(projectcode);
-        return ResponseEntity.ok(new ResponseWrapper("Project is retrieved",projectDTO));
+    public ProjectDTO readByProjectCode(@PathVariable("projectCode") String projectCode){
+        ProjectDTO projectDTO = projectService.getByProjectCode(projectCode);
+        return projectDTO;
     }
 
     @PostMapping
@@ -95,4 +104,14 @@ public class ProjectController {
 
         }
     }
+
+    @GetMapping("/user/{username}")
+    @Operation(summary = "Read all projects by manager")
+    @DefaultExceptionMessage(defaultMessage = "Something went wrong, try again!")
+//    @PreAuthorize("hasAnyAuthority('Admin','Manager')")
+    public ResponseEntity<ResponseWrapper> readAllByManager(@PathVariable("username") String username){
+        List<ProjectDTO> projectDTOS = projectService.readAllByAssignedManager(username);
+        return ResponseEntity.ok(new ResponseWrapper("Project are retrieved", projectDTOS));
+    }
+
 }

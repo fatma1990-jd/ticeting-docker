@@ -69,7 +69,6 @@ public class UserController {
         return ResponseEntity.ok(new ResponseWrapper("Successfully updated",updatedUser));
     }
 
-
     @DeleteMapping("/{username}")
     @DefaultExceptionMessage(defaultMessage = "Something went wrong, try again!")
     @Operation(summary = "Delete User")

@@ -23,7 +23,7 @@ public interface ProjectService {
 
     List<ProjectDTO> listAllProjectDetails(String userName) throws TicketingProjectException;
 
-    List<ProjectDTO> readAllByAssignedManager(User user);
+    List<ProjectDTO> readAllByAssignedManager(String username);
 
     List<ProjectDTO> listAllNonCompletedProjects();
 

@@ -1,13 +1,19 @@
 package com.microservices.demo.service.impl;
 
+import com.microservices.demo.dto.ProjectDTO;
+import com.microservices.demo.dto.TaskDTO;
 import com.microservices.demo.dto.UserDTO;
+import com.microservices.demo.entity.ResponseWrapper;
 import com.microservices.demo.entity.User;
 import com.microservices.demo.exception.TicketingProjectException;
 import com.microservices.demo.repository.UserRepository;
 import com.microservices.demo.service.UserService;
+import com.microservices.demo.userclient.service.ProjectClientService;
+import com.microservices.demo.userclient.service.TaskClientService;
 import com.microservices.demo.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -17,14 +23,16 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-
-
     private UserRepository userRepository;
     private MapperUtil mapperUtil;
+    private TaskClientService taskClientService;
+    private ProjectClientService projectClientService;
 
-    public UserServiceImpl(UserRepository userRepository, MapperUtil mapperUtil) {
+    public UserServiceImpl(UserRepository userRepository, MapperUtil mapperUtil, TaskClientService taskClientService, ProjectClientService projectClientService) {
         this.userRepository = userRepository;
         this.mapperUtil = mapperUtil;
+        this.taskClientService = taskClientService;
+        this.projectClientService = projectClientService;
     }
 
     @Override
@@ -85,10 +93,10 @@ public class UserServiceImpl implements UserService {
         if(user == null){
             throw new TicketingProjectException("User Does Not Exists");
         }
-//
-//        if(!checkIfUserCanBeDeleted(user)){
-//            throw new TicketingProjectException("User can not be deleted. It is linked by a project ot task");
-//        }
+
+        if(!checkIfUserCanBeDeleted(user)){
+            throw new TicketingProjectException("User can not be deleted. It is linked by a project ot task");
+        }
 
         user.setUserName(user.getUserName() + "-" + user.getId());
 
@@ -109,20 +117,22 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(obj -> {return mapperUtil.convert(obj,new UserDTO());}).collect(Collectors.toList());
     }
 
-//    @Override
-//    public Boolean checkIfUserCanBeDeleted(User user) {
-//
-//        switch(user.getRole().getDescription()){
-//            case "Manager":
-//                List<ProjectDTO> projectList = projectService.readAllByAssignedManager(user);
-//                return projectList.size() == 0;
-//            case "Employee":
-//                List<TaskDTO> taskList = taskService.readAllByEmployee(user);
-//                return taskList.size() == 0;
-//            default:
-//                return true;
-//        }
-//    }
+    @Override
+    public Boolean checkIfUserCanBeDeleted(User user) {
+
+//        ResponseEntity<ResponseWrapper> responseWrapperResponseEntity = projectClientService.readAllByManager(user.getUserName());
+
+        switch(user.getRole().getDescription()){
+            case "Manager":
+                List<ProjectDTO> projectList = (List<ProjectDTO>) projectClientService.readAllByManager(user.getUserName()).getBody().getData();
+                return projectList.size() == 0;
+            case "Employee":
+                List<TaskDTO> taskList = (List<TaskDTO>) taskClientService.employeeReadAllNonCompleteTask().getBody().getData();
+                return taskList.size() == 0;
+            default:
+                return true;
+        }
+    }
 
     @Override
     public UserDTO confirm(User user) {
