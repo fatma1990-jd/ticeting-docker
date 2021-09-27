@@ -12,6 +12,7 @@
         <module>task-service</module>
         <module>app-client-management</module>
         <module>gateway-service</module>
+
     </modules>
 
     <parent>
@@ -38,6 +39,8 @@
         <spring-cloud.version>2.2.6.RELEASE</spring-cloud.version>
         <spring-cloud-dependencies.version>Hoxton.SR9</spring-cloud-dependencies.version>
         <maven-compiler-plugin>3.8.1</maven-compiler-plugin>
+
+
     </properties>
 
     <dependencyManagement>
@@ -130,6 +133,7 @@
                 <artifactId>spring-cloud-starter-gateway</artifactId>
                 <version>${spring-cloud.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-ui</artifactId>
