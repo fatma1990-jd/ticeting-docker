@@ -1,3 +1,21 @@
+#spring:
+#  application:
+#    name: project-service
+#  profiles:
+#    active: user_service
+#  cloud:
+#    config:
+#      name: project-service,config-client
+#      uri: http://configserver:8888
+#      fail-fast: true
+#      retry:
+#        maxAttempts: 200
+#        maxInterval: 10000
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://discovery-service-1:8761/eureka/,http://discovery-service-2:8762/eureka/
+
 spring:
   application:
     name: task-service
@@ -5,7 +23,7 @@ spring:
     active: user_service
   cloud:
     config:
-      name: user-service,config-client
+      name: task-service,config-client
       uri: http://localhost:8888
       fail-fast: true
       retry:

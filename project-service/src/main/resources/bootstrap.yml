@@ -23,7 +23,7 @@ spring:
     active: user_service
   cloud:
     config:
-      name: user-service,config-client
+      name: project-service,config-client
       uri: http://localhost:8888
       fail-fast: true
       retry:
