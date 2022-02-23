@@ -42,22 +42,22 @@
 #    serviceUrl:
 #      defaultZone: http://discovery-service-2:8762/eureka/,http://discovery-service-1:8761/eureka/
 
-server:
-  port: 8761
-
-spring:
-  application:
-    name: eureka-server
-  cloud:
-    config:
-      uri: http://localhost:8761
-    loadbalancer:
-      ribbon:
-        enabled: false
-eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
-  instance:
-    appname: service-registry-cluster
-    hostname: localhost
+#server:
+#  port: 8761
+#
+#spring:
+#  application:
+#    name: eureka-server
+#  cloud:
+#    config:
+#      uri: http://localhost:8761
+#    loadbalancer:
+#      ribbon:
+#        enabled: false
+#eureka:
+#  client:
+#    register-with-eureka: false
+#    fetch-registry: false
+#  instance:
+#    appname: service-registry-cluster
+#    hostname: localhost

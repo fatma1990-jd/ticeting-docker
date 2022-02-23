@@ -167,6 +167,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
+
                     <release>${java.version}</release>
                 </configuration>
             </plugin>
@@ -177,6 +178,8 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot.version}</version>
+
+
                 </plugin>
             </plugins>
 
