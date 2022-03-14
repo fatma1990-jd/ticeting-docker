@@ -1,123 +1,193 @@
-version: '2.1'
+version: '3.7'
 services:
   database:
-    restart: "no"
-    image: postgres:latest
-    ports:
-      - "5435:5432"
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "admin"
-      POSTGRES_DB: "cybertek_db"
-    volumes:
-      - ./init:/docker-entrypoint-initdb.d
-    networks:
-      backend:
-        aliases:
-          - "database"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  configserver:
-    image: com.microservices.demo/config-service:${SERVICE_VERSION}
-    ports:
-      - "8888:8888"
-    networks:
-      backend:
-        aliases:
-          - "configserver"
-  userservice:
-    image: com.microservices.demo/user-service:${SERVICE_VERSION}
-    environment:
-      - "PROFILE=dev"
-      - "CONFIGSERVER_URI=http://configserver:8888"
-      - "CONFIGSERVER_PORT=8888"
-      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
-    depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-    ports:
-      - "8080:8080"
-    networks:
-      - backend
-  projectservice:
-    image: com.microservices.demo/project-service:${SERVICE_VERSION}
-    environment:
-      - "PROFILE=dev"
-      - "CONFIGSERVER_URI=http://configserver:8888"
-      - "CONFIGSERVER_PORT=8888"
-      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
-    depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-    ports:
-      - "8081:8081"
-    networks:
-      - backend
-  taskservice:
-    image: com.microservices.demo/task-service:${SERVICE_VERSION}
-    environment:
-      - "PROFILE=dev"
-      - "CONFIGSERVER_URI=http://configserver:8888"
-      - "CONFIGSERVER_PORT=8888"
-      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
-    depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-    ports:
-      - "8082:8082"
-    networks:
-      - backend
-#  discovery-service-1:
-  discovery-service:
-    image: com.microservices.demo/discovery-service:${SERVICE_VERSION}
-    ports:
-      - "5014:5014"
-      - "8761:8761"
-    volumes:
-      - "./docker-logs:/workspace/discovery-service/logs"
-    environment:
-      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5014 -Xms128m -Xmx256m"
-      - "LOGGING_LEVEL_ROOT=info"
-      - "SERVER_PORT=8761"
-#      - "SPRING_PROFILES_ACTIVE=peer1"
-#      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-1"
-#      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-1:8761/eureka/,http://discovery-service-2:8762/eureka/"
-      - "EUREKA_INSTANCE_HOSTNAME=localhost"
-      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://localhost:8761/eureka/"
-    networks:
-      - backend
-#  discovery-service-2:
-#    image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
-#    ports:
-#      - "5015:5015"
-#      - "8762:8762"
-#    volumes:
-#      - "./docker-logs:/workspace/discovery-service/logs"
-#    environment:
-#      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5015 -Xms128m -Xmx256m"
-#      - "LOGGING_LEVEL_ROOT=info"
-#      - "SERVER_PORT=8762"
-#      - "SPRING_PROFILES_ACTIVE=peer2"
-#      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-2"
-#      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-2:8762/eureka/,http://discovery-service-1:8761/eureka/"
-#    networks:
-#      - backend
-networks:
-  backend:
-    driver: bridge
+      restart: "no"
+      image: postgres:latest
+      ports:
+        - "5435:5432"
+      environment:
+        POSTGRES_USER: "postgres"
+        POSTGRES_PASSWORD: "admin"
+        POSTGRES_DB: "cybertek_db"
+      volumes:
+        - ./init:/docker-entrypoint-initdb.d
+      networks:
+        backend:
 
+  configserver:
+      image: ${GROUP_ID}/config-service:${SERVICE_VERSION}
+      ports:
+        - "8888:8888"
+      networks:
+        backend:
+
+  gateway-service:
+      image: ${GROUP_ID}/gateway-service:${SERVICE_VERSION}
+      ports:
+        - "9090:9090"
+      depends_on:
+        - discovery-service
+        - configserver
+      restart: always
+      networks:
+        backend:
+
+  userservice:
+      image: ${GROUP_ID}/user-service:${SERVICE_VERSION}
+      environment:
+        - "PROFILE=dev"
+        - "CONFIGSERVER_URI=http://configserver:8888"
+        - "CONFIGSERVER_PORT=8888"
+        - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms12g -Xmx1024m"
+        - "CATALINA_OPTS=-Xmx12g -Xms12g -XX:MaxPermSize=1024m"
+      depends_on:
+        - database
+        - discovery-service
+        - configserver
+      ports:
+        - "8080:8080"
+      networks:
+        - backend
+  projectservice:
+      image: ${GROUP_ID}/project-service:${SERVICE_VERSION}
+      environment:
+        - "PROFILE=dev"
+        - "CONFIGSERVER_URI=http://configserver:8888"
+        - "CONFIGSERVER_PORT=8888"
+        - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms12g -Xmx1024m"
+        - "CATALINA_OPTS=-Xmx12g -Xms12g -XX:MaxPermSize=1024m"
+      depends_on:
+        - database
+        - discovery-service
+        - configserver
+      ports:
+        - "8081:8081"
+      networks:
+        - backend
+  taskservice:
+      image: ${GROUP_ID}/task-service:${SERVICE_VERSION}
+      environment:
+        - "PROFILE=dev"
+        - "CONFIGSERVER_URI=http://configserver:8888"
+        - "CONFIGSERVER_PORT=8888"
+        - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms12g -Xmx1024m"
+        - "CATALINA_OPTS=-Xmx12g -Xms12g -XX:MaxPermSize=1024m"
+      depends_on:
+        - database
+        - discovery-service
+        - configserver
+      ports:
+        - "8082:8082"
+      networks:
+        - backend
+  #  discovery-service-1:
+  discovery-service:
+      image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION}
+      ports:
+        - "5014:5014"
+        - "8761:8761"
+      volumes:
+        - "./docker-logs:/workspace/discovery-service/logs"
+      restart: always
+      environment:
+#        - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5014 -Xms12g -Xmx1024m"
+        - "LOGGING_LEVEL_ROOT=info"
+        - "SERVER_PORT=8761"
+      networks:
+        - backend
+networks:
+   backend:
+
+  #  naming-server:
+  #    #image: in28min/netflix-eureka-naming-server:0.0.1-SNAPSHOT
+  #    build:
+  #      context: netflix-eureka-naming-server
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - "8761:8761"
+  #    restart: always
+  #    networks:
+  #      - ba
+
+
+#     rabbitmq:
+#       image: rabbitmq:3.5.3-management
+#       ports:
+#         - "5672:5672"
+#         - "15672:15672"
+#       restart: always
+#       networks:
+#         - currency-compose-network
+#
+#  zipkin-server:
+#    image: openzipkin/zipkin
+#    container_name: zipkin
+#    environment:
+#      STORAGE_TYPE: mem
+#      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+#    ports:
+#      - "9411:9411"
+#    restart: always
+#    depends_on:
+#      - rabbitmq
+#    networks:
+#      - currency-compose-network
+#
+#
+#  zuul-api-gateway:
+#    #image: in28min/netflix-zuul-api-gateway-server:0.0.1-SNAPSHOT
+#    build:
+#      context: netflix-zuul-api-gateway-server
+#      dockerfile: Dockerfile
+#    environment:
+#      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+#    ports:
+#      - "8765:8765"
+#    restart: always
+#    depends_on:
+#      - naming-server
+#      - rabbitmq
+#      - zipkin-server
+#    networks:
+#      - currency-compose-network
+#
+#  currency-exchange-service:
+#    #image: in28min/currency-exchange-service:0.0.1-SNAPSHOT
+#    build:
+#      context: currency-exchange-service
+#      dockerfile: Dockerfile
+#    environment:
+#      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+#    ports:
+#      - "8000:8000"
+#    restart: always
+#    depends_on:
+#      - naming-server
+#      - rabbitmq
+#      - zipkin-server
+#    networks:
+#      - currency-compose-network
+#
+#  currency-conversion-service:
+#    #image: in28min/currency-conversion-service:0.0.1-SNAPSHOT
+#    build:
+#      context: currency-conversion-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8100:8100"
+#    restart: always
+#    environment:
+#      #CURRENCY_EXCHANGE_URI: http://currency-exchange-service:8000
+#      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+#    depends_on:
+#      - currency-exchange-service
+#      - naming-server
+#      - rabbitmq
+#      - zipkin-server
+#    networks:
+#      - currency-compose-network
 
 #version: '2.1'
-#
 #services:
 #  database:
 #    restart: "no"
@@ -128,18 +198,136 @@ networks:
 #      POSTGRES_USER: "postgres"
 #      POSTGRES_PASSWORD: "admin"
 #      POSTGRES_DB: "cybertek_db"
-#    #    networks:
-#    #      backend:
-#    #        aliases:
-#    #          - "database"
 #    volumes:
 #      - ./init:/docker-entrypoint-initdb.d
+#    networks:
+#      backend:
+#        aliases:
+#          - "database"
 #    healthcheck:
 #      test: ["CMD-SHELL", "pg_isready -U postgres"]
 #      interval: 10s
 #      timeout: 5s
 #      retries: 5
-
+#  configserver:
+#    image: ${GROUP_ID}/config-service:${SERVICE_VERSION}
+#    ports:
+#      - "8888:8888"
+#    networks:
+#      backend:
+#        aliases:
+#          - "configserver"
+#  userservice:
+#    image: ${GROUP_ID}/user-service:${SERVICE_VERSION}
+#    environment:
+#      - "PROFILE=dev"
+#      - "CONFIGSERVER_URI=http://configserver:8888"
+#      - "CONFIGSERVER_PORT=8888"
+#      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+#    depends_on:
+#      database:
+#        condition: service_healthy
+#      configserver:
+#        condition: service_started
+#    ports:
+#      - "8080:8080"
+#    networks:
+#      - backend
+#  projectservice:
+#    image: ${GROUP_ID}/project-service:${SERVICE_VERSION}
+#    environment:
+#      - "PROFILE=dev"
+#      - "CONFIGSERVER_URI=http://configserver:8888"
+#      - "CONFIGSERVER_PORT=8888"
+#      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+#    depends_on:
+#      database:
+#        condition: service_healthy
+#      configserver:
+#        condition: service_started
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - backend
+#  taskservice:
+#    image: ${GROUP_ID}/task-service:${SERVICE_VERSION}
+#    environment:
+#      - "PROFILE=dev"
+#      - "CONFIGSERVER_URI=http://configserver:8888"
+#      - "CONFIGSERVER_PORT=8888"
+#      - "JAVA_OPTS:-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007 -Xms128m -Xmx256m"
+#    depends_on:
+#      database:
+#        condition: service_healthy
+#      configserver:
+#        condition: service_started
+#    ports:
+#      - "8082:8082"
+#    networks:
+#      - backend
+##  discovery-service-1:
+#  discovery-service:
+#    image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION}
+#    ports:
+#      - "5014:5014"
+#      - "8761:8761"
+#    volumes:
+#      - "./docker-logs:/workspace/discovery-service/logs"
+#    environment:
+#      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5014 -Xms128m -Xmx256m"
+#      - "LOGGING_LEVEL_ROOT=info"
+#      - "SERVER_PORT=8761"
+##      - "SPRING_PROFILES_ACTIVE=peer1"
+##      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-1"
+##      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-1:8761/eureka/,http://discovery-service-2:8762/eureka/"
+#      - "EUREKA_INSTANCE_HOSTNAME=localhost"
+#      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://localhost:8761/eureka/"
+#    networks:
+#      - backend
+##  discovery-service-2:
+##    image: ${GROUP_ID}/discovery-service:${SERVICE_VERSION:-latest}
+##    ports:
+##      - "5015:5015"
+##      - "8762:8762"
+##    volumes:
+##      - "./docker-logs:/workspace/discovery-service/logs"
+##    environment:
+##      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5015 -Xms128m -Xmx256m"
+##      - "LOGGING_LEVEL_ROOT=info"
+##      - "SERVER_PORT=8762"
+##      - "SPRING_PROFILES_ACTIVE=peer2"
+##      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-2"
+##      - "EUREKA_CLIENT_SERVICE-URL_DEFAULT-ZONE=http://discovery-service-2:8762/eureka/,http://discovery-service-1:8761/eureka/"
+##    networks:
+##      - backend
+#networks:
+#  backend:
+#    driver: bridge
+#
+#
+##version: '2.1'
+##
+##services:
+##  database:
+##    restart: "no"
+##    image: postgres:latest
+##    ports:
+##      - "5435:5432"
+##    environment:
+##      POSTGRES_USER: "postgres"
+##      POSTGRES_PASSWORD: "admin"
+##      POSTGRES_DB: "cybertek_db"
+##    #    networks:
+##    #      backend:
+##    #        aliases:
+##    #          - "database"
+##    volumes:
+##      - ./init:/docker-entrypoint-initdb.d
+##    healthcheck:
+##      test: ["CMD-SHELL", "pg_isready -U postgres"]
+##      interval: 10s
+##      timeout: 5s
+##      retries: 5
 
 
 

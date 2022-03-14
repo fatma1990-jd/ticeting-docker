@@ -8,6 +8,7 @@ eureka:
   instance:
     appname: service-registry-cluster
 
+
 logging:
   level:
     com.netflix.eureka: OFF
