@@ -9,7 +9,7 @@ spring:
           clone-on-start: true
           default-label: main
           username: ozzy-dev
-          password: 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
+          password: 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
     fail-fast: true
 #  security:
 #    user:
